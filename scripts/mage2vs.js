@@ -38,6 +38,7 @@ function getMagentoDefaultConfig(storeCode) {
     MAGENTO_URL: apiConfig.url,
     REDIS_HOST: config.redis.host,
     REDIS_PORT: config.redis.port,
+    REDIS_DB: config.redis.db,
     INDEX_NAME: config.elasticsearch.indices[0],
     DATABASE_URL: `${config.elasticsearch.protocol}://${config.elasticsearch.host}:${config.elasticsearch.port}`
   }
@@ -129,6 +130,7 @@ program
         process.exit(-1)
       } else {
         magentoConfig.INDEX_NAME = storeView.elasticsearch.index;
+        magentoConfig.MAGENTO_STORE_ID = storeView.storeId;
       }
     }
 

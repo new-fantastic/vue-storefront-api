@@ -2,6 +2,9 @@
 import { downloadImage, fit, identify, resize } from '../lib/image';
 import mime from 'mime-types';
 import URL from 'url';
+import path from 'path';
+import mkdirp from 'mkdirp';
+import fs from 'fs';
 
 const SUPPORTED_ACTIONS = ['fit', 'resize', 'identify'];
 const SUPPORTED_MIMETYPES = ['image/gif', 'image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
@@ -10,6 +13,27 @@ const ONE_YEAR = 31557600000;
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
+
+var supportedMimes = [
+  'image/jpeg',
+  'image/png',
+  'image/tiff'
+];
+
+// var _tempCache = [];
+
+// var sendVary = function send(res, path, cb) {
+//   var sendMethod = typeof res.sendFile === 'undefined' ?
+//     res.sendfile :
+//     res.sendFile;
+//   vary(res, 'Accept');
+//   sendMethod.call(res, path, cb);
+// }
+
+// var sendAndSave = function sendAndSave(res, path, cb) {
+//   _tempCache.push(path);
+//   sendVary(res, path, cb);
+// };
 
 export default ({ config, db }) =>
   asyncMiddleware(async (req, res, body) => {
@@ -88,19 +112,38 @@ export default ({ config, db }) =>
       });
     }
 
+    // use custom dir or choose default
+    const options = {};
+    var cacheDir = options.cacheDir ?
+      options.cacheDir :
+      path.join(process.cwd(), 'webp-cache');
+
+
+    // create cache dir if not exists
+    var cachePathExists = fs.existsSync(path.join(cacheDir));
+    if (!cachePathExists) {
+      mkdirp.sync(path.join(cacheDir));
+    }
+
+    var accept = req.headers.accept;
+
+    var hasMimetype = supportedMimes.indexOf(mimeType) !== -1;
+    var acceptWebp = accept && accept.indexOf('image/webp') !== -1;
+    let webpAccept = hasMimetype && acceptWebp;
+
     switch (action) {
       case 'resize':
         return res
           .type(mimeType)
           .set({ 'Cache-Control': `max-age=${ONE_YEAR}` })
-          .send(await resize(buffer, width, height));
+          .send(await resize(buffer, width, height, webpAccept));
       case 'fit':
         return res
           .type(mimeType)
           .set({ 'Cache-Control': `max-age=${ONE_YEAR}` })
-          .send(await fit(buffer, width, height));
+          .send(await fit(buffer, width, height, webpAccept));
       case 'identify':
-        return res.set({ 'Cache-Control': `max-age=${ONE_YEAR}` }).send(await identify(buffer));
+        return res.set({ 'Cache-Control': `max-age=${ONE_YEAR}` }).send(await identify(buffer, webpAccept));
       default:
         throw new Error('Unknown action');
     }

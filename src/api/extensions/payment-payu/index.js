@@ -81,10 +81,9 @@ module.exports = ({ config }) => {
   payuApi.post("/order", async (req, res) => {
     try {
       const bearer = await receiveBearer(res);
+
       const response = await makeAnOrder(req.body, bearer, res);
-      console.log(response);
       const body = JSON.parse(response);
-      console.log(body);
       apiStatus(
         res,
         {

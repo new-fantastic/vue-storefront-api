@@ -33,5 +33,27 @@ module.exports = ({ config, db }) => {
       });
   });
 
+  mcApi.get("/cart-price-rules", (req, res) => {
+    const client = Magento2Client(config.magento2.api);
+
+    client.addMethods("cartPriceRules", function(restClient) {
+      var module = {};
+
+      module.all = function(categoryId) {
+        return restClient.get(`/salesRules/search?searchCriteria=`);
+      };
+      return module;
+    });
+
+    client.cartPriceRules
+      .all(req.params.cid)
+      .then(result => {
+        apiStatus(res, result, 200); // just dump it to the browser, result = JSON object
+      })
+      .catch(err => {
+        apiStatus(res, err, 500);
+      });
+  });
+
   return mcApi;
 };

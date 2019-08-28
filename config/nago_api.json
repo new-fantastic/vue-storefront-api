@@ -1,0 +1,355 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 8080,
+    "searchEngine": "elasticsearch"
+  },
+  "orders": {
+    "useServerQueue": false
+  },
+  "catalog": {
+    "excludeDisabledProducts": false
+  },
+  "elasticsearch": {
+    "host": "localhost",
+    "port": 9200,
+    "protocol": "http",
+    "user": "elastic",
+    "password": "changeme",
+    "min_score": 0.01,
+    "indices": [
+      "vue_storefront_catalog",
+      "vue_storefront_catalog_pln",
+      "vue_storefront_catalog_eur"
+    ],
+    "indexTypes": [
+      "product",
+      "category",
+      "cms",
+      "attribute",
+      "taxrule",
+      "review"
+    ],
+    "apiVersion": "5.6"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0
+  },
+  "kue": {},
+  "availableStores": ["pln", "eur"],
+  "storeViews": {
+    "multistore": true,
+    "mapStoreUrlsFor": ["pln", "eur"],
+    "pl": {
+      "storeCode": "pln",
+      "disabled": false,
+      "storeId": 1,
+      "name": "Polish Store",
+      "url": "/pln",
+      "elasticsearch": {
+        "host": "api.pln.nago.com/api/catalog",
+        "index": "vue_storefront_catalog_pln"
+      },
+      "tax": {
+        "defaultCountry": "PL",
+        "defaultRegion": "",
+        "calculateServerSide": true,
+        "sourcePriceIncludesTax": true
+      },
+      "i18n": {
+        "fullCountryName": "Poland",
+        "fullLanguageName": "Polish",
+        "defaultLanguage": "PL",
+        "defaultCountry": "PL",
+        "defaultLocale": "pl-PL",
+        "currencyCode": "PLN",
+        "currencySign": "PLN",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    },
+    "eur": {
+      "storeCode": "eur",
+      "disabled": true,
+      "storeId": 2,
+      "name": "European Store",
+      "url": "/eur",
+      "elasticsearch": {
+        "host": "api.pln.nago.com/api/catalog",
+        "index": "vue_storefront_catalog_eur"
+      },
+      "tax": {
+        "defaultCountry": "EU",
+        "defaultRegion": "",
+        "calculateServerSide": true,
+        "sourcePriceIncludesTax": true
+      },
+      "i18n": {
+        "fullCountryName": "Europe",
+        "fullLanguageName": "English",
+        "defaultCountry": "EU",
+        "defaultLanguage": "EU",
+        "defaultLocale": "eu-EU",
+        "currencyCode": "EUR",
+        "currencySign": "EUR",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    }
+  },
+  "authHashSecret": "__SECRET_CHANGE_ME__",
+  "objHashSecret": "__SECRET_CHANGE_ME__",
+  "cart": {
+    "setConfigurableProductOptions": false
+  },
+  "tax": {
+    "defaultCountry": "PL",
+    "defaultRegion": "",
+    "calculateServerSide": true,
+    "alwaysSyncPlatformPricesOver": true,
+    "usePlatformTotals": true,
+    "setConfigurableProductOptions": true,
+    "sourcePriceIncludesTax": true
+  },
+  "bodyLimit": "100kb",
+  "corsHeaders": ["Link"],
+  "platform": "magento2",
+  "registeredExtensions": [
+    "mailchimp-subscribe",
+    "example-magento-api",
+    "cms-data",
+    "mail-service",
+    "payment-payu",
+    "custom-pricing-rules"
+  ],
+  "extensions": {
+    "mailchimp": {
+      "listId": "e06875a7e1",
+      "apiKey": "a9a3318ea7d30f5c5596bd4a78ae0985-us3",
+      "apiUrl": "https://us3.api.mailchimp.com/3.0"
+    },
+    "mailService": {
+      "transport": {
+        "host": "smtp.gmail.com",
+        "port": 465,
+        "secure": true,
+        "user": "vuestorefront",
+        "pass": "vuestorefront.io"
+      },
+      "targetAddressWhitelist": ["contributors@vuestorefront.io"],
+      "secretString": "__THIS_IS_SO_SECRET__"
+    }
+  },
+  "magento2": {
+    "url": "https://checkout.nago.com/pln/",
+    "imgUrl": "https://checkout.nago.com/media/catalog/product",
+    "assetPath": "/../var/magento/var/www/checkout.nago.com/current/pub/media",
+    "api": {
+      "url": "https://checkout.nago.com/rest",
+      "consumerKey": "xeh3ixp65zqczi7ekpf8vv3kikcgb86t",
+      "consumerSecret": "ciqm44lemgni3qxfrp732k23lx0awx2n",
+      "accessToken": "jr8fo79hmro4rg6kto7x1wyqbguicp9b",
+      "accessTokenSecret": "ns39be0729ga1v7ytz1h2csu632okkz9"
+    }
+  },
+  "magento1": {
+    "imgUrl": "http://magento-demo.local/media/catalog/product",
+    "api": {
+      "url": "http://magento-demo.local/vsbridge",
+      "consumerKey": "",
+      "consumerSecret": "",
+      "accessToken": "",
+      "accessTokenSecret": ""
+    }
+  },
+  "imageable": {
+    "maxListeners": 512,
+    "imageSizeLimit": 2048,
+    "whitelist": {
+      "allowedHosts": [".*nago.com"]
+    },
+    "cache": {
+      "memory": 50,
+      "files": 20,
+      "items": 100
+    },
+    "concurrency": 0,
+    "counters": {
+      "queue": 2,
+      "process": 4
+    },
+    "simd": true
+  },
+  "entities": {
+    "category": {
+      "includeFields": [
+        "description",
+        "children_data",
+        "id",
+        "children_count",
+        "sku",
+        "name",
+        "is_active",
+        "parent_id",
+        "level",
+        "url_key"
+      ]
+    },
+    "attribute": {
+      "includeFields": [
+        "attribute_code",
+        "id",
+        "entity_type_id",
+        "options",
+        "default_value",
+        "is_user_defined",
+        "frontend_label",
+        "attribute_id",
+        "default_frontend_label",
+        "is_visible_on_front",
+        "is_visible",
+        "is_comparable",
+        "news_from_date",
+        "news_to_date"
+      ]
+    },
+    "productList": {
+      "sort": "",
+      "includeFields": [
+        "featured_in",
+        "newin_label",
+        "configurable_children.*",
+        "media_gallery_entries",
+        "media_gallery",
+        "product_label_primary",
+        "product_label_secondary",
+        "tags",
+        "material",
+        "qualities",
+        "drop",
+        "type_id",
+        "sku",
+        "product_links",
+        "tax_class_id",
+        "special_price",
+        "special_to_date",
+        "special_from_date",
+        "name",
+        "price",
+        "priceInclTax",
+        "originalPriceInclTax",
+        "originalPrice",
+        "specialPriceInclTax",
+        "id",
+        "image",
+        "sale",
+        "new",
+        "url_key"
+      ],
+      "excludeFields": ["description", "configurable_options", "sgn"]
+    },
+    "productListWithChildren": {
+      "includeFields": [
+        "featured_in",
+        "newin_label",
+        "media_gallery_entries",
+        "media_gallery",
+        "product_label_primary",
+        "product_label_secondary",
+        "tags",
+        "material",
+        "qualities",
+        "drop",
+        "type_id",
+        "sku",
+        "name",
+        "tax_class_id",
+        "special_price",
+        "special_to_date",
+        "special_from_date",
+        "price",
+        "priceInclTax",
+        "originalPriceInclTax",
+        "originalPrice",
+        "specialPriceInclTax",
+        "id",
+        "image",
+        "sale",
+        "new",
+        "configurable_children.image",
+        "configurable_children.sku",
+        "configurable_children.price",
+        "configurable_children.special_price",
+        "configurable_children.priceInclTax",
+        "configurable_children.specialPriceInclTax",
+        "configurable_children.originalPrice",
+        "configurable_children.originalPriceInclTax",
+        "configurable_children.color",
+        "configurable_children.size",
+        "configurable_children.news_from_date",
+        "configurable_children.media_gallery",
+        "configurable_children.media_gallery_entries",
+        "product_links",
+        "url_key"
+      ],
+      "excludeFields": ["description", "sgn"]
+    },
+    "product": {
+      "excludeFields": [
+        "updated_at",
+        "created_at",
+        "attribute_set_id",
+        "status",
+        "visibility",
+        "tier_prices",
+        "options_container",
+        "msrp_display_actual_price_type",
+        "has_options",
+        "stock.manage_stock",
+        "stock.use_config_min_qty",
+        "stock.use_config_notify_stock_qty",
+        "stock.stock_id",
+        "stock.use_config_backorders",
+        "stock.use_config_enable_qty_inc",
+        "stock.enable_qty_increments",
+        "stock.use_config_manage_stock",
+        "stock.use_config_min_sale_qty",
+        "stock.notify_stock_qty",
+        "stock.use_config_max_sale_qty",
+        "stock.use_config_max_sale_qty",
+        "stock.qty_increments",
+        "small_image"
+      ],
+      "includeFields": [
+        "model_info",
+        "media_gallery_entries",
+        "product_label_primary",
+        "product_label_secondary",
+        "media_gallery",
+        "tags",
+        "material",
+        "promoted_description"
+      ],
+      "filterFieldMapping": {
+        "category.name": "category.name.keyword"
+      }
+    }
+  },
+  "usePriceTiers": false,
+  "boost": {
+    "name": 3,
+    "category.name": 1,
+    "short_description": 1,
+    "description": 1,
+    "sku": 1,
+    "configurable_children.sku": 1
+  },
+
+  "payu": {
+    "clientId": 1162483,
+    "clientSecret": "423f86bcbd108313f5cc2b3740955684",
+    "merchantPosId": "1162483",
+    "sandbox": false,
+    "notifyUrl": "https://checkout.nago.com/pln/payu/data/getNotify/type/PBL/store/1/"
+  }
+}

@@ -120,7 +120,8 @@
     "cms-data",
     "mail-service",
     "payment-payu",
-    "custom-pricing-rules"
+    "custom-pricing-rules",
+    "sort-order"
   ],
   "extensions": {
     "mailchimp": {

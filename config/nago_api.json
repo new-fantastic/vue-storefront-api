@@ -385,7 +385,7 @@
       },
       "orderId": {
         "default": "Order ID",
-        "pl": "Number zamówienia"
+        "pl": "Numer zamówienia"
       },
       "reason": {
         "default": "Reason",
@@ -414,6 +414,14 @@
       "price": {
         "default": "Price",
         "pl": "Cena"
+      },
+      "theseProducts": {
+        "default": "These products",
+        "pl": "Następujące producty"
+      },
+      "changeTo": {
+        "default": "I would like to change to",
+        "pl": "Chciałbym zamienić na"
       }
     }
   }

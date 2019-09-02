@@ -1,8 +1,7 @@
 export default ({ currency, storeCode, headers, email, subject, name, phone, orderId, reason, accountNumber, products }) => {
   const msg = {
     from: email,
-    subject,
-    text: 'Refund'
+    subject
   };
 
   const tableElem = (header, content) => {

@@ -121,7 +121,8 @@
     "mail-service",
     "payment-payu",
     "custom-pricing-rules",
-    "sort-order"
+    "sort-order",
+    "sendgrid"
   ],
   "extensions": {
     "mailchimp": {
@@ -345,12 +346,83 @@
     "sku": 1,
     "configurable_children.sku": 1
   },
-
   "payu": {
     "clientId": 1162483,
     "clientSecret": "423f86bcbd108313f5cc2b3740955684",
     "merchantPosId": "1162483",
     "sandbox": false,
     "notifyUrl": "https://checkout.nago.com/pln/payu/data/getNotify/type/PBL/store/1/"
+  },
+  "sendgrid": {
+    "key": "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",
+    "mails": {
+      "default": "filip.jdrasik@gmail.com",
+      "eu": "filip@newfantastic.com",
+      "mx": "filipj7@gmail.com"
+    },
+    "subjects": {
+      "exchange": {
+        "default": "Exchange",
+        "pl": "Wymiana"
+      },
+      "refund": {
+        "default": "Refund",
+        "pl": "Zwrot"
+      }
+    },
+    "headers": {
+      "email": {
+        "default": "Email address",
+        "pl": "Adres email"
+      },
+      "name": {
+        "default": "Name",
+        "pl": "Imię i nazwisko"
+      },
+      "phone": {
+        "default": "Phone number",
+        "pl": "Numer telefonu"
+      },
+      "orderId": {
+        "default": "Order ID",
+        "pl": "Numer zamówienia"
+      },
+      "reason": {
+        "default": "Reason",
+        "pl": "Powód"
+      },
+      "accountNumber": {
+        "default": "Account number",
+        "pl": "Numer konta"
+      },
+      "products": {
+        "default": "Products",
+        "pl": "Produkty"
+      },
+      "productName": {
+        "default": "Product's name",
+        "pl": "Nazwa produktu"
+      },
+      "color": {
+        "default": "Color",
+        "pl": "Kolor"
+      },
+      "size": {
+        "default": "Size",
+        "pl": "Rozmiar"
+      },
+      "price": {
+        "default": "Price",
+        "pl": "Cena"
+      },
+      "theseProducts": {
+        "default": "These products: ",
+        "pl": "Następujące producty: "
+      },
+      "changeTo": {
+        "default": "I would like to change to: ",
+        "pl": "Chciałbym zamienić na: "
+      }
+    }
   }
 }

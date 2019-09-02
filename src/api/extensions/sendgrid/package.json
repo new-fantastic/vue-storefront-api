@@ -1,0 +1,11 @@
+{
+  "name": "sendgrid-mail",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:new-fantastic/vsf-sendgrid.git",
+  "author": "Fifciuu",
+  "license": "MIT",
+  "dependencies": {
+    "@sendgrid/mail": "^6.4.0"
+  }
+}

@@ -416,12 +416,12 @@
         "pl": "Cena"
       },
       "theseProducts": {
-        "default": "These products",
-        "pl": "Następujące producty"
+        "default": "These products: ",
+        "pl": "Następujące producty: "
       },
       "changeTo": {
-        "default": "I would like to change to",
-        "pl": "Chciałbym zamienić na"
+        "default": "I would like to change to: ",
+        "pl": "Chciałbym zamienić na: "
       }
     }
   }

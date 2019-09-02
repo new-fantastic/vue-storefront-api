@@ -1,8 +1,35 @@
-export default ({ currency, storeCode, headers, email, subject, name, phone, orderId, reason, accountNumber, products, changeFor }) => {
+const validator = require('../util/validators.js')
+
+export default ({ currency, storeCode, headers, email, subject, name, phone, orderId, orderDate, reason, accountNumber, products, changeFor }) => {
   const msg = {
     from: email,
     subject
   };
+
+  if (!validator['email'](email)) {
+    throw new Error('Bad email')
+  }
+  if (!validator['phone'](phone)) {
+    throw new Error('Bad phone')
+  }
+  if (!validator['name'](name)) {
+    throw new Error('Bad name')
+  }
+  if (!validator['orderDate'](orderDate)) {
+    throw new Error('Bad orderDate')
+  }
+  if (!validator['reason'](reason)) {
+    throw new Error('Bad reason')
+  }
+  if (!validator['accountNumber'](accountNumber)) {
+    throw new Error('Bad accountNumber')
+  }
+  if (!validator['products'](products)) {
+    throw new Error('Bad products')
+  }
+  if (!validator['products'](changeFor)) {
+    throw new Error('Bad changeForProducts')
+  }
 
   const tableElem = (header, content) => {
     return `<tr><th>${header}</th><td>${content}</td></tr>`

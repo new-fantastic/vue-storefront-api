@@ -30,7 +30,7 @@ module.exports = ({ config, db }) => {
 
     } catch (err) {
       console.error(err);
-      apiStatus(res, err, 500);
+      apiStatus(res, err.message, 500);
     }
   });
 

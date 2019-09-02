@@ -38,10 +38,10 @@
     "db": 0
   },
   "kue": {},
-  "availableStores": ["pln", "eur"],
+  "availableStores": ["pl", "en"],
   "storeViews": {
     "multistore": true,
-    "mapStoreUrlsFor": ["pln", "eur"],
+    "mapStoreUrlsFor": ["pl", "en"],
     "pl": {
       "storeCode": "pln",
       "disabled": false,
@@ -69,7 +69,7 @@
         "dateFormat": "HH:mm D-M-YYYY"
       }
     },
-    "eur": {
+    "en": {
       "storeCode": "eur",
       "disabled": true,
       "storeId": 2,

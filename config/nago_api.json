@@ -387,6 +387,10 @@
         "default": "Order ID",
         "pl": "Numer zamówienia"
       },
+      "orderDate": {
+        "default": "Order Date",
+        "pl": "Data zamówienia"
+      },
       "reason": {
         "default": "Reason",
         "pl": "Powód"

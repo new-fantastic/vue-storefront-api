@@ -43,7 +43,7 @@
     "multistore": true,
     "mapStoreUrlsFor": ["pl", "en"],
     "pl": {
-      "storeCode": "pln",
+      "storeCode": "pl",
       "disabled": false,
       "storeId": 1,
       "name": "Polish Store",
@@ -70,7 +70,7 @@
       }
     },
     "en": {
-      "storeCode": "eur",
+      "storeCode": "en",
       "disabled": true,
       "storeId": 2,
       "name": "European Store",

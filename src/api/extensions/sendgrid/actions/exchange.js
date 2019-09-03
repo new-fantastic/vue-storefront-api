@@ -18,9 +18,6 @@ export default ({ currency, storeCode, headers, email, subject, name, phone, ord
   if (!validator['orderDate'](orderDate)) {
     throw new Error('Bad orderDate')
   }
-  if (!validator['orderId'](orderId)) {
-    throw new Error('Bad orderId')
-  }
   if (!validator['products'](products)) {
     throw new Error('Bad products')
   }

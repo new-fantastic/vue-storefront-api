@@ -18,11 +18,8 @@ export default ({ currency, storeCode, headers, email, subject, name, phone, ord
   if (!validator['orderDate'](orderDate)) {
     throw new Error('Bad orderDate')
   }
-  if (!validator['reason'](reason)) {
-    throw new Error('Bad reason')
-  }
-  if (!validator['accountNumber'](accountNumber)) {
-    throw new Error('Bad accountNumber')
+  if (!validator['orderId'](orderId)) {
+    throw new Error('Bad orderId')
   }
   if (!validator['products'](products)) {
     throw new Error('Bad products')
@@ -63,8 +60,7 @@ export default ({ currency, storeCode, headers, email, subject, name, phone, ord
       ${tableElem(checkStorecode('phone'), phone)}
       ${tableElem(checkStorecode('email'), email)}
       ${tableElem(checkStorecode('orderId'), orderId)}
-      ${tableElem(checkStorecode('reason'), reason)}
-      ${tableElem(checkStorecode('accountNumber'), accountNumber)}
+      ${tableElem(checkStorecode('orderDate'), orderDate)}
     </table>
     <br>${checkStorecode('theseProducts')}
     ${productTable(products)}

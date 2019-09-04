@@ -2,15 +2,42 @@ import sharp from 'sharp';
 import rp from 'request-promise-native';
 import config from 'config';
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs'; 
+import redis from 'redis'
 
 sharp.cache(config.imageable.cache);
 sharp.concurrency(config.imageable.concurrency);
 sharp.counters(config.imageable.counters);
 sharp.simd(config.imageable.simd);
 
-export async function downloadImage (url) {
-  return await rp.get(url, { encoding: null });
+const client = redis.createClient({ ...config.redis, return_buffers : true })
+
+export function downloadImage (url) {
+
+  return new Promise((resolve, reject) => {
+    client.get(url, async (err, value) => {
+      if (err) {
+        console.log('Redis get Error')
+      } else {
+        if (!value) {
+          console.log('Image does not exist in redis')
+          const img = await rp.get(url, { encoding: null });
+          client.set(url, img, (err, resp) => {
+            if (err) {
+              console.log('Redis set Error')
+            } else {
+              console.log('Redis set Success')
+            }
+            resolve(img)
+          })
+        } else {
+          console.log('Served from Redis!')
+          resolve(value)
+        }
+      }
+    })
+  })
+  // return await rp.get(url, { encoding: null });
 }
 
 export async function identify (buffer, webpAccept) {

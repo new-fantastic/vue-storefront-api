@@ -4,9 +4,9 @@ import request from "request-promise-native";
 
 const Magento2Client = require('magento2-rest-client').Magento2Client
 
-// const PAYU_SANDBOX_CLIENT_ID = "300746";
-// const PAYU_SANDBOX_CLIENT_SECRET = "2ee86a66e5d97e3fadc400c9f19b065d";
-// const PAYU_SANDBOX_POS_ID = "300746";
+const PAYU_SANDBOX_CLIENT_ID = "300746";
+const PAYU_SANDBOX_CLIENT_SECRET = "2ee86a66e5d97e3fadc400c9f19b065d";
+const PAYU_SANDBOX_POS_ID = "300746";
 
 module.exports = ({ config }) => {
   let mcApi = Router();
@@ -29,99 +29,82 @@ module.exports = ({ config }) => {
 		})				
 	})
 
-	return mcApi
+  let bearer = null;
+  let expirationTime = null;
 
-//   const payuApi = Router();
+  const receiveBearer = async res => {
+    if (bearer && expirationTime > new Date()) {
+      return bearer;
+    }
+    const clientId = config.payu.sandbox
+      ? PAYU_SANDBOX_CLIENT_ID
+      : config.payu.clientId;
+    const clientSecret = config.payu.sandbox
+      ? PAYU_SANDBOX_CLIENT_SECRET
+      : config.payu.clientSecret;
+    const url = config.payu.sandbox
+      ? `https://secure.snd.payu.com/pl/standard/user/oauth/authorize?grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`
+      : `https://secure.payu.com/pl/standard/user/oauth/authorize?grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`;
 
-//   let bearer = null;
-//   let expirationTime = null;
+    try {
+      let response = await request(url);
 
-//   const receiveBearer = async res => {
-//     if (bearer && expirationTime > new Date()) {
-//       return bearer;
-//     }
-//     const clientId = config.payu.sandbox
-//       ? PAYU_SANDBOX_CLIENT_ID
-//       : config.payu.clientId;
-//     const clientSecret = config.payu.sandbox
-//       ? PAYU_SANDBOX_CLIENT_SECRET
-//       : config.payu.clientSecret;
-//     const url = config.payu.sandbox
-//       ? `https://secure.snd.payu.com/pl/standard/user/oauth/authorize?grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`
-//       : `https://secure.payu.com/pl/standard/user/oauth/authorize?grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`;
+      let body = JSON.parse(response);
 
-//     try {
-//       let response = await request(url);
+      const date = new Date();
+      date.setSeconds(date.getSeconds() + body.expires_in);
+      expirationTime = date;
+      bearer = body.access_token;
+      return bearer;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Couldn't get OAuth Bearer!" + e);
+    }
+  };
 
-//       let body = JSON.parse(response);
+  const getPaymentMethods = async (bearer) => {
+    const url = config.payu.sandbox
+      ? "https://secure.snd.payu.com/api/v2_1/paymethods"
+      : "https://secure.payu.com/api/v2_1/paymethods";
 
-//       const date = new Date();
-//       date.setSeconds(date.getSeconds() + body.expires_in);
-//       expirationTime = date;
-//       bearer = body.access_token;
-//       return bearer;
-//     } catch (e) {
-//       console.log(e);
-//       throw new Error("Couldn't get OAuth Bearer!" + e);
-//     }
-//   };
+    try {
+      let response = await request({
+        uri: url,
+        method: "GET",
+        headers: {
+          "Cache-Control": "no-cache",
+          Authorization: `Bearer ${bearer}`
+        }
+      });
+      return response;
+    } catch (e) {
+      if (e.statusCode === 302) {
+        return e.response.body;
+      } else {
+        console.log(e);
+        throw new Error(e);
+      }
+    }
+  };
 
-//   const makeAnOrder = async (body, bearer, res) => {
-//     const url = config.payu.sandbox
-//       ? "https://secure.snd.payu.com/api/v2_1/orders"
-//       : "https://secure.payu.com/api/v2_1/orders";
+  mcApi.get("/payment-methods", async (req, res) => {
+    try {
+      const bearer = await receiveBearer(res);
 
-//     try {
-//       console.log(body);
-//       let response = await request({
-//         uri: url,
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${bearer}`
-//         },
-//         body: JSON.stringify({
-//           ...body,
-//           merchantPosId: config.payu.sandbox
-//             ? PAYU_SANDBOX_CLIENT_ID
-//             : config.payu.merchantPosId,
-//           notifyUrl: config.payu.notifyUrl
-//         })
-//       });
-//       // reponse
-//       // {
-//       //   redirectUri
-//       //   orderId
-//       // }
-//       return response;
-//     } catch (e) {
-//       if (e.statusCode === 302) {
-//         return e.response.body;
-//       } else {
-//         console.log(e);
-//         throw new Error(e);
-//       }
-//     }
-//   };
-
-//   payuApi.post("/order", async (req, res) => {
-//     try {
-//       const bearer = await receiveBearer(res);
-
-//       const response = await makeAnOrder(req.body, bearer, res);
-//       const body = JSON.parse(response);
-//       apiStatus(
-//         res,
-//         {
-//           redirectUri: body.redirectUri
-//         },
-//         200
-//       );
-//     } catch (e) {
-//       console.log(e);
-//       apiStatus(res, e, 400);
-//     }
-//   });
+      const response = await getPaymentMethods(bearer);
+      const body = JSON.parse(response);
+      apiStatus(
+        res,
+        body,
+        200
+      );
+    } catch (e) {
+      console.log(e);
+      apiStatus(res, e, 400);
+    }
+  });
 
 //   return payuApi;
+
+  return mcApi
 };

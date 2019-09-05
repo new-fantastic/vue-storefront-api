@@ -25,7 +25,14 @@ module.exports = ({ config, db }) => {
         ? config.sendgrid.mails[storeCode]
         : config.sendgrid.mails.default;
 
-      await sgMail.send(msg)
+      await Promise.all([
+        sgMail.send(msg),
+        sgMail.send({ 
+          ...msg,
+          to: msg.from,
+          from: msg.to
+        })
+      ])
       apiStatus(res, 'Email sent', 200);
 
     } catch (err) {

@@ -425,6 +425,14 @@
       "changeTo": {
         "default": "I would like to change to: ",
         "pl": "Chciałbym zamienić na: "
+      },
+      "message": {
+        "default": "Message",
+        "pl": "Wiadomość"
+      },
+      "subject": {
+        "default": "Subject",
+        "pl": "Temat"
       }
     }
   }

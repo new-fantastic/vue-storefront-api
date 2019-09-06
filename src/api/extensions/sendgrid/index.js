@@ -17,9 +17,9 @@ module.exports = ({ config, db }) => {
         storeCode,
         currency: config.storeViews[storeCode].i18n.currencySign,
         headers: config.sendgrid.headers,
-        subject: config.sendgrid.subjects.hasOwnProperty(action) && config.sendgrid.subjects[action].hasOwnProperty(storeCode)
+        subject: req.body.subject ? req.body.subject : (config.sendgrid.subjects.hasOwnProperty(action) && config.sendgrid.subjects[action].hasOwnProperty(storeCode)
           ? config.sendgrid.subjects[action][storeCode]
-          : config.sendgrid.subjects[action].default
+          : config.sendgrid.subjects[action].default)
       });
       msg.to = config.sendgrid.mails.hasOwnProperty(storeCode)
         ? config.sendgrid.mails[storeCode]
@@ -40,28 +40,6 @@ module.exports = ({ config, db }) => {
       apiStatus(res, err.message, 500);
     }
   });
-
-  // mcApi.get('/mail/:action', (req, res) => {
-  //   const client = Magento2Client(config.magento2.api);
-
-  //   client.addMethods('cartPriceRules', function(restClient) {
-  //     var module = {};
-
-  //     module.all = function(categoryId) {
-  //       return restClient.get(`/salesRules/search?searchCriteria=`);
-  //     };
-  //     return module;
-  //   });
-
-  //   client.cartPriceRules
-  //     .all(req.params.cid)
-  //     .then(result => {
-  //       apiStatus(res, result, 200); // just dump it to the browser, result = JSON object
-  //     })
-  //     .catch(err => {
-  //       apiStatus(res, err, 500);
-  //     });
-  // });
 
   return mcApi;
 };

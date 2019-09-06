@@ -19,8 +19,8 @@
     "min_score": 0.01,
     "indices": [
       "vue_storefront_catalog",
-      "vue_storefront_catalog_pln",
-      "vue_storefront_catalog_eur"
+      "vue_storefront_catalog_pl",
+      "vue_storefront_catalog_en"
     ],
     "indexTypes": [
       "product",
@@ -47,10 +47,10 @@
       "disabled": false,
       "storeId": 1,
       "name": "Polish Store",
-      "url": "/pln",
+      "url": "/pl",
       "elasticsearch": {
         "host": "api.pln.nago.com/api/catalog",
-        "index": "vue_storefront_catalog_pln"
+        "index": "vue_storefront_catalog_pl"
       },
       "tax": {
         "defaultCountry": "PL",
@@ -71,13 +71,13 @@
     },
     "en": {
       "storeCode": "en",
-      "disabled": true,
+      "disabled": false,
       "storeId": 2,
       "name": "European Store",
-      "url": "/eur",
+      "url": "/en",
       "elasticsearch": {
         "host": "api.pln.nago.com/api/catalog",
-        "index": "vue_storefront_catalog_eur"
+        "index": "vue_storefront_catalog_en"
       },
       "tax": {
         "defaultCountry": "EU",
@@ -356,17 +356,16 @@
   "sendgrid": {
     "key": "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",
     "mails": {
-      "default": "filip.jdrasik@gmail.com",
-      "eu": "filip@newfantastic.com",
-      "mx": "filipj7@gmail.com"
+      "default": "alek@newfantastic.com",
+      "eu": "alek@newfantastic.com"
     },
     "subjects": {
       "exchange": {
         "default": "Exchange",
         "pl": "Wymiana"
       },
-      "refund": {
-        "default": "Refund",
+      "return": {
+        "default": "Return",
         "pl": "Zwrot"
       }
     },

@@ -1,6 +1,6 @@
 const validator = require('../util/validators.js')
 
-export default ({ message, subject, email }) => {
+export default ({ message, subject, email, headers }) => {
   const msg = {
     from: email,
     subject: 'Kontakt - ' + subject
@@ -18,6 +18,10 @@ export default ({ message, subject, email }) => {
 
   const tableElem = (header, content) => {
     return `<tr><th>${header}</th><td>${content}</td></tr>`
+  }
+
+  const checkStorecode = (header) => {
+    return headers[header].hasOwnProperty(storeCode) ? headers[header][storeCode] : headers[header].default
   }
 
   const table = `

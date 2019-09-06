@@ -1,6 +1,6 @@
 const validator = require('../util/validators.js')
 
-export default ({ message, subject, email, headers }) => {
+export default ({ message, subject, email, headers, storeCode }) => {
   const msg = {
     from: email,
     subject: 'Kontakt - ' + subject

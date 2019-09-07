@@ -1,6 +1,6 @@
 const validator = require('../util/validators.js')
 
-export default ({ currency, storeCode, headers, email, subject, name, phone, orderId, reason, accountNumber, products }) => {
+export default ({ currency, storeCode, headers, email, subject, name, phone, orderId, orderDate, reason, accountNumber, products }) => {
   const msg = {
     from: email,
     subject
@@ -23,6 +23,9 @@ export default ({ currency, storeCode, headers, email, subject, name, phone, ord
   }
   if (!validator['products'](products)) {
     throw new Error('Bad products')
+  }
+  if (!validator['orderDate'](orderDate)) {
+    throw new Error('Bad orderDate')
   }
 
   const tableElem = (header, content) => {
@@ -57,6 +60,7 @@ export default ({ currency, storeCode, headers, email, subject, name, phone, ord
       ${tableElem(checkStorecode('phone'), phone)}
       ${tableElem(checkStorecode('email'), email)}
       ${tableElem(checkStorecode('orderId'), orderId)}
+      ${tableElem(checkStorecode('orderDate'), orderDate)}
       ${tableElem(checkStorecode('reason'), reason)}
       ${tableElem(checkStorecode('accountNumber'), accountNumber)}
     </table>

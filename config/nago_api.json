@@ -356,8 +356,8 @@
   "sendgrid": {
     "key": "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",
     "mails": {
-      "default": "alek@newfantastic.com",
-      "eu": "alek@newfantastic.com"
+      "default": "contact@nago.com",
+      "eu": "contact@nago.com"
     },
     "subjects": {
       "exchange": {

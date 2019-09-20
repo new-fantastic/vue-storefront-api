@@ -347,9 +347,9 @@
     "configurable_children.sku": 1
   },
   "payu": {
-    "clientId": 1162483,
-    "clientSecret": "423f86bcbd108313f5cc2b3740955684",
-    "merchantPosId": "1162483",
+    "clientId": 1237439,
+    "clientSecret": "2013e5af816f122f995b8b03a7a45228",
+    "merchantPosId": "1237439",
     "sandbox": false,
     "notifyUrl": "https://checkout.nago.com/pln/payu/data/getNotify/type/PBL/store/1/"
   },

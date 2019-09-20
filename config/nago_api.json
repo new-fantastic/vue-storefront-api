@@ -354,7 +354,7 @@
     "notifyUrl": "https://checkout.nago.com/pln/payu/data/getNotify/type/PBL/store/1/"
   },
   "sendgrid": {
-    "key": "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",
+    "key": "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",
     "mails": {
       "default": "contact@nago.com",
       "eu": "contact@nago.com"

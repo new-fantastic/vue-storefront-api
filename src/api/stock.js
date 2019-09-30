@@ -23,6 +23,8 @@ export default ({ config, db }) => {
 			return apiStatus(res, 'sku parameter is required', 500);
 
 		stockProxy.check(req.params.sku).then((result) => {
+
+			console.log(result)
 			apiStatus(res, result, 200);
 		}).catch(err=> {
 			apiStatus(res, err, 500);

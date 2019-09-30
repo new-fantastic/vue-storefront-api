@@ -9,7 +9,7 @@ class StockProxy extends AbstractUserProxy {
   }
 
   check (sku) {
-    return this.api.stockItems.list(sku)
+    return this.api.stockItems.list(sku).then(result => result)
   }
 }
 

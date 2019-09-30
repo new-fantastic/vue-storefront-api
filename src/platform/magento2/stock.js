@@ -8,9 +8,8 @@ class StockProxy extends AbstractUserProxy {
     this.api = Magento2Client(multiStoreConfig(config.magento2.api, req));
   }
 
-  async check (sku) {
-    let { result } = await this.api.stockItems.list(sku)
-    return result
+  check (sku) {
+    return this.api.stockItems.list(sku)
   }
 }
 

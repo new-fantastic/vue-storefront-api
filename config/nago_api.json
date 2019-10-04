@@ -347,17 +347,17 @@
     "configurable_children.sku": 1
   },
   "payu": {
-    "clientId": 1162483,
-    "clientSecret": "423f86bcbd108313f5cc2b3740955684",
-    "merchantPosId": "1162483",
+    "clientId": 1237439,
+    "clientSecret": "2013e5af816f122f995b8b03a7a45228",
+    "merchantPosId": "1237439",
     "sandbox": false,
     "notifyUrl": "https://checkout.nago.com/pln/payu/data/getNotify/type/PBL/store/1/"
   },
   "sendgrid": {
-    "key": "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",
+    "key": "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",
     "mails": {
-      "default": "alek@newfantastic.com",
-      "eu": "alek@newfantastic.com"
+      "default": "contact@nago.com",
+      "eu": "contact@nago.com"
     },
     "subjects": {
       "exchange": {

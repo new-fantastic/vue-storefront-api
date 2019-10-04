@@ -2,7 +2,14 @@
   "server": {
     "host": "localhost",
     "port": 8080,
-    "searchEngine": "elasticsearch"
+    "searchEngine": "elasticsearch",
+    "useOutputCacheTagging": false,
+    "useOutputCache": false,
+    "outputCacheDefaultTtl": 86400,
+    "availableCacheTags": ["P", "C", "T", "A", "product", "category", "attribute", "taxrule"],
+    "invalidateCacheKey": "aeSu7aip",
+    "invalidateCacheForwarding": false,
+    "invalidateCacheForwardUrl": "http://localhost:3000/invalidate?key=aeSu7aip&tag="
   },
   "orders": {
     "useServerQueue": false
@@ -35,13 +42,18 @@
   "redis": {
     "host": "localhost",
     "port": 6379,
-    "db": 0
+    "db": 0,
+    "auth": false
   },
   "kue": {},
   "availableStores": [
     "de",
     "it"
   ],
+  "msi": {
+    "enabled": false,
+    "defaultStockId": 1
+  },
   "storeViews": {
     "multistore": true,
     "mapStoreUrlsFor": [
@@ -50,7 +62,7 @@
     ],
     "de": {
       "storeCode": "de",
-      "disabled": true,
+      "disabled": false,
       "storeId": 3,
       "name": "German Store",
       "url": "/de",
@@ -58,11 +70,18 @@
         "host": "localhost:8080/api/catalog",
         "index": "vue_storefront_catalog_de"
       },
+      "msi": {
+        "stockId": 2
+      },
       "tax": {
         "defaultCountry": "DE",
         "defaultRegion": "",
+        "deprecatedPriceFieldsSupport": true,
         "calculateServerSide": true,
-		"sourcePriceIncludesTax": false
+        "sourcePriceIncludesTax": false,
+        "finalPriceIncludesTax": true,
+        "userGroupId": null,
+        "useOnlyDefaultUserGroupId": false
       },
       "i18n": {
         "fullCountryName": "Germany",
@@ -77,7 +96,7 @@
     },
     "it": {
       "storeCode": "it",
-      "disabled": true,
+      "disabled": false,
       "storeId": 4,
       "name": "Italian Store",
       "url": "/it",
@@ -85,11 +104,18 @@
         "host": "localhost:8080/api/catalog",
         "index": "vue_storefront_catalog_it"
       },
+      "msi": {
+        "stockId": 2
+      },
       "tax": {
         "defaultCountry": "IT",
         "defaultRegion": "",
         "calculateServerSide": true,
-		"sourcePriceIncludesTax": false
+        "sourcePriceIncludesTax": false,
+        "deprecatedPriceFieldsSupport": true,
+        "finalPriceIncludesTax": true,
+        "userGroupId": null,
+        "useOnlyDefaultUserGroupId": false
       },
       "i18n": {
         "fullCountryName": "Italy",
@@ -115,7 +141,14 @@
     "alwaysSyncPlatformPricesOver": false,
     "usePlatformTotals": true,
     "setConfigurableProductOptions": true,
-	"sourcePriceIncludesTax": false
+    "sourcePriceIncludesTax": false,
+    "deprecatedPriceFieldsSupport": true,
+    "finalPriceIncludesTax": true,
+    "userGroupId": null,
+    "useOnlyDefaultUserGroupId": false
+  },
+  "review": {
+    "defaultReviewStatus": 2 
   },
   "bodyLimit": "100kb",
   "corsHeaders": [
@@ -126,13 +159,16 @@
     "mailchimp-subscribe",
     "example-magento-api",
     "cms-data",
-    "mail-service"
+    "mail-service",
+    "example-processor",
+    "elastic-stock"
   ],
   "extensions": {
     "mailchimp": {
       "listId": "e06875a7e1",
       "apiKey": "a9a3318ea7d30f5c5596bd4a78ae0985-us3",
-      "apiUrl": "https://us3.api.mailchimp.com/3.0"
+      "apiUrl": "https://us3.api.mailchimp.com/3.0",
+      "userStatus": "subscribed"
     },
     "mailService": {
       "transport": {
@@ -144,6 +180,11 @@
       },
       "targetAddressWhitelist": ["contributors@vuestorefront.io"],
       "secretString": "__THIS_IS_SO_SECRET__"
+    },
+    "example-processor": {
+      "resultProcessors": {
+        "product": "my-product-processor"
+      }
     }
   },
   "magento2": {
@@ -159,6 +200,11 @@
   },
   "magento1": {
     "imgUrl": "http://magento-demo.local/media/catalog/product",
+    "assetPath": "",
+    "magentoUserName": "",
+    "magentoUserPassword": "",
+    "httpUserName": "",
+    "httpUserPassword": "",
     "api": {
       "url": "http://magento-demo.local/vsbridge",
       "consumerKey": "",
@@ -186,7 +232,22 @@
       "queue": 2,
       "process": 4
     },
-    "simd": true
+    "simd": true,
+    "caching": {
+      "active": false,
+      "type": "file",
+      "file": {
+        "path": "/tmp/vue-storefront-api"
+      },
+      "google-cloud-storage": {
+        "libraryOptions": {},
+        "bucket": "",
+        "prefix": "vue-storefront-api/image-cache"
+      }
+    },
+    "action": {
+      "type": "local"
+    }
   },
   "entities": {
       "category": {

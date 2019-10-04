@@ -94,6 +94,24 @@ NOTE: `npm` users will still have to install the dependencies individually in th
 
 ## Reviews
 To use review feature you need to install custom module for Magento 2: [Divante ReviewApi](https://github.com/DivanteLtd/magento2-review-api)
+By default new reviews will be added with status "Pending". 
+```json
+  "review": {
+    "defaultReviewStatus": 2 
+  },
+```
+
+## Output Cache
+Vue Storefront API supports output cache for catalog operations. Cache is tagged and can by dynamically invalidated. Please find the details how to configure it [in our docs](https://docs.vuestorefront.io/guide/basics/ssr-cache.html).
+
+You can manually clear the Redis cache for specific tags by running the following command:
+
+```bash
+npm run cache clear
+npm run cache clear -- --tag=product,category
+npm run cache clear -- --tag=P198
+npm run cache clear -- --tag=*
+```
 
 ## Running initial Magento2 import
 
@@ -126,6 +144,12 @@ You can run the following command to execute the full import:
 ```bash
  yarn mage2vs import --store-code=de
  ```
+
+ Import of CMS blocks and pages is also performed by the full import. If the CMS API extension ((SnowdogApps/magento2-cms-api)[https://github.com/SnowdogApps/magento2-cms-api]) was not installed in magento 2, it's recommended to skip the CMS import commands.
+
+```bash
+ yarn mage2vs import --skip-blocks --skip-pages
+ ```
  
 ## Executing delta indexer
 
@@ -134,6 +158,11 @@ You can use the following command to run a delta indexer for a specific storevie
 ```
 yarn mage2vs productsdelta --store-code=de
 ```
+
+## Self signed certificates
+
+Often in non production environment other services are using self signed certificates for secure connection.
+You can easily setup the application to trust them by putting them in config/certs directory.  
 
 License
 -------

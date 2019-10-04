@@ -8,14 +8,10 @@ program
   .option('-q|--prefix <prefix>', 'prefix', 'q')
   .action((cmd) => {
     kue.createQueue({
-      redis: {
-        host: config.host,
-        port: config.port,
-        db: config.db
-      },
+      redis: config,
       prefix: cmd.prefix
     })
-  
+
     kue.app.listen(cmd.port)
   });
 
@@ -33,7 +29,7 @@ process.on('unhandledRejection', (reason, p) => {
   // application specific logging, throwing an error, or other logic here
 })
 
-process.on('uncaughtException', function (exception) {
+process.on('uncaughtException', (exception) => {
   console.error(exception) // to see your exception details in the console
   // if you are on production, maybe you can send the exception details to your
   // email as well ?

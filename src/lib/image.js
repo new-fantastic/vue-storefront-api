@@ -10,34 +10,9 @@ sharp.concurrency(config.imageable.concurrency);
 sharp.counters(config.imageable.counters);
 sharp.simd(config.imageable.simd);
 
-const client = redis.createClient({ ...config.redis, return_buffers : true })
-
-export function downloadImage (url) {
-
-  return new Promise((resolve, reject) => {
-    client.get(url, async (err, value) => {
-      if (err) {
-        console.log('Redis get Error')
-      } else {
-        if (!value) {
-          console.log('Image does not exist in redis')
-          const img = await rp.get(url, { encoding: null });
-          client.set(url, img, (err, resp) => {
-            if (err) {
-              console.log('Redis set Error')
-            } else {
-              console.log('Redis set Success')
-            }
-            resolve(img)
-          })
-        } else {
-          console.log('Served from Redis!')
-          resolve(value)
-        }
-      }
-    })
-  })
-  // return await rp.get(url, { encoding: null });
+export async function downloadImage (url) {
+  const response = await rp.get(url, { encoding: null });
+  return response
 }
 
 export async function identify (buffer, webpAccept) {
@@ -52,7 +27,7 @@ export async function identify (buffer, webpAccept) {
   } catch (err) {
     console.log(err);
   }
-} 
+}
 
 export async function resize (buffer, width, height, webpAccept) {
   try {

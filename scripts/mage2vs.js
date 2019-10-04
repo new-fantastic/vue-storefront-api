@@ -2,24 +2,23 @@ const program = require('commander')
 const config = require('config')
 const spawn = require('child_process').spawn
 
-function multiStoreConfig(apiConfig, storeCode) {
+function multiStoreConfig (apiConfig, storeCode) {
   let confCopy = Object.assign({}, apiConfig)
 
-  if (storeCode && config.availableStores.indexOf(storeCode) >= 0)
-  {
-      if (config.magento2['api_' + storeCode]) {
-          confCopy = Object.assign({}, config.magento2['api_' + storeCode]) // we're to use the specific api configuration - maybe even separate magento instance
-      }
-      confCopy.url = confCopy.url + '/' + storeCode
+  if (storeCode && config.availableStores.indexOf(storeCode) >= 0) {
+    if (config.magento2['api_' + storeCode]) {
+      confCopy = Object.assign({}, config.magento2['api_' + storeCode]) // we're to use the specific api configuration - maybe even separate magento instance
+    }
+    confCopy.url = confCopy.url + '/' + storeCode
   } else {
-      if (storeCode) {
-          console.error('Unavailable store code', storeCode)
-      }
+    if (storeCode) {
+      console.error('Unavailable store code', storeCode)
+    }
   }
   return confCopy
 }
 
-function getMagentoDefaultConfig(storeCode) {
+function getMagentoDefaultConfig (storeCode) {
   const apiConfig = multiStoreConfig(config.magento2.api, storeCode)
   return {
     TIME_TO_EXIT: 2000,
@@ -36,15 +35,17 @@ function getMagentoDefaultConfig(storeCode) {
     MAGENTO_ACCESS_TOKEN: apiConfig.accessToken,
     MAGENTO_ACCESS_TOKEN_SECRET: apiConfig.accessTokenSecret,
     MAGENTO_URL: apiConfig.url,
+    MAGENTO_MSI_STOCK_ID: config.msi.defaultStockId,
     REDIS_HOST: config.redis.host,
     REDIS_PORT: config.redis.port,
     REDIS_DB: config.redis.db,
+    REDIS_AUTH: config.redis.auth,
     INDEX_NAME: config.elasticsearch.indices[0],
     DATABASE_URL: `${config.elasticsearch.protocol}://${config.elasticsearch.host}:${config.elasticsearch.port}`
   }
 }
 
-function exec(cmd, args, opts) {
+function exec (cmd, args, opts) {
   return new Promise((resolve, reject) => {
     let child = spawn(cmd, args, opts)
     child.stdout.on('data', (data) => {
@@ -89,10 +90,14 @@ program
         magentoConfig.INDEX_NAME = storeView.elasticsearch.index
         magentoConfig.INDEX_META_PATH = '.lastIndex-' + cmd.storeCode + '.json'
         magentoConfig.MAGENTO_STORE_ID = storeView.storeId
+        magentoConfig.MAGENTO_MSI_STOCK_ID = storeView.msi.stockId
+        if (storeView.i18n && storeView.i18n.currencyCode) {
+          magentoConfig.MAGENTO_CURRENCY_CODE = storeView.i18n.currencyCode;
+        }
       }
     }
 
-    const env = Object.assign({}, magentoConfig, process.env)  // use process env as well
+    const env = Object.assign({}, magentoConfig, process.env) // use process env as well
     console.log('=== Delta indexer is about to start ===')
 
     exec('node', [
@@ -108,7 +113,6 @@ program
     ], { env: env, shell: true }).then((res) => {
 
     })
-
   })
 
 program
@@ -120,6 +124,9 @@ program
   .option('--skip-attributes <skipAttributes>', 'skip import of attributes', false)
   .option('--skip-taxrule <skipTaxrule>', 'skip import of taxrule', false)
   .option('--skip-products <skipProducts>', 'skip import of products', false)
+  .option('--skip-pages <skipPages>', 'skip import of cms pages', false)
+  .option('--skip-blocks <skipBlocks>', 'skip import of cms blocks', false)
+  .option('--generate-unique-url-keys <generateUniqueUrlKeys>', 'generate unique url keys for categories', true)
   .action((cmd) => {
     let magentoConfig = getMagentoDefaultConfig(cmd.storeCode)
 
@@ -131,6 +138,9 @@ program
       } else {
         magentoConfig.INDEX_NAME = storeView.elasticsearch.index;
         magentoConfig.MAGENTO_STORE_ID = storeView.storeId;
+        if (storeView.i18n && storeView.i18n.currencyCode) {
+          magentoConfig.MAGENTO_CURRENCY_CODE = storeView.i18n.currencyCode;
+        }
       }
     }
 
@@ -152,26 +162,31 @@ program
     if (cmd.skipProducts) {
       magentoConfig.SKIP_PRODUCTS = true;
     }
+    if (cmd.skipPages) {
+      magentoConfig.SKIP_PAGES = true;
+    }
+    if (cmd.skipBlocks) {
+      magentoConfig.SKIP_BLOCKS = true;
+    }
 
-    const env = Object.assign({}, magentoConfig, process.env)  // use process env as well
+    magentoConfig.GENERATE_UNIQUE_URL_KEYS = cmd.generateUniqueUrlKeys;
+
+    const env = Object.assign({}, magentoConfig, process.env) // use process env as well
     console.log('=== The mage2vuestorefront full reindex is about to start. Using the following Magento2 config ===', magentoConfig)
 
-    let createDbPromise = function() {
-
+    let createDbPromise = function () {
       console.log(' == CREATING NEW DATABASE ==')
       return exec('node', [
         'scripts/db.js',
         'new',
         `--indexName=${env.INDEX_NAME}`
       ], { env: env, shell: true })
-
     }
 
-    let importReviewsPromise = function() {
-      if (magentoConfig.SKIP_REVIEWS ) {
+    let importReviewsPromise = function () {
+      if (magentoConfig.SKIP_REVIEWS) {
         return Promise.resolve();
-      }
-      else {
+      } else {
         console.log(' == REVIEWS IMPORTER ==');
         return exec('node', [
           '--harmony',
@@ -181,27 +196,26 @@ program
       }
     }
 
-    let importCategoriesPromise = function() {
-      if (magentoConfig.SKIP_CATEGORIES ) {
+    let importCategoriesPromise = function () {
+      if (magentoConfig.SKIP_CATEGORIES) {
         return Promise.resolve();
-      }
-      else {
+      } else {
         console.log(' == CATEGORIES IMPORTER ==');
         return exec('node', [
           '--harmony',
           'node_modules/mage2vuestorefront/src/cli.js',
           'categories',
           '--removeNonExistent=true',
-          '--extendedCategories=true'
+          '--extendedCategories=true',
+          `--generateUniqueUrlKeys=${magentoConfig.GENERATE_UNIQUE_URL_KEYS}`
         ], { env: env, shell: true })
       }
     }
 
-    let importProductcategoriesPromise = function() {
-      if (magentoConfig.SKIP_PRODUCTCATEGORIES ) {
+    let importProductcategoriesPromise = function () {
+      if (magentoConfig.SKIP_PRODUCTCATEGORIES) {
         return Promise.resolve();
-      }
-      else {
+      } else {
         console.log(' == PRODUCT-CATEGORIES IMPORTER ==');
         return exec('node', [
           '--harmony',
@@ -211,11 +225,10 @@ program
       }
     }
 
-    let importAttributesPromise = function() {
-      if (magentoConfig.SKIP_ATTRIBUTES ) {
+    let importAttributesPromise = function () {
+      if (magentoConfig.SKIP_ATTRIBUTES) {
         return Promise.resolve();
-      }
-      else {
+      } else {
         console.log(' == ATTRIBUTES IMPORTER ==');
         return exec('node', [
           '--harmony',
@@ -226,11 +239,10 @@ program
       }
     }
 
-    let importTaxrulePromise = function() {
-      if (magentoConfig.SKIP_TAXRULE ) {
+    let importTaxrulePromise = function () {
+      if (magentoConfig.SKIP_TAXRULE) {
         return Promise.resolve();
-      }
-      else {
+      } else {
         console.log(' == TAXRULE IMPORTER ==');
         return exec('node', [
           '--harmony',
@@ -241,11 +253,10 @@ program
       }
     }
 
-    let importProductsPromise = function() {
-      if (magentoConfig.SKIP_PRODUCTS ) {
+    let importProductsPromise = function () {
+      if (magentoConfig.SKIP_PRODUCTS) {
         return Promise.resolve();
-      }
-      else {
+      } else {
         console.log(' == PRODUCTS IMPORTER ==');
         return exec('node', [
           '--harmony',
@@ -257,7 +268,7 @@ program
       }
     }
 
-    let reindexPromise = function() {
+    let reindexPromise = function () {
       console.log(' == REINDEXING DATABASE ==')
       return exec('node', [
         'scripts/db.js',
@@ -266,16 +277,58 @@ program
       ], {env: env, shell: true})
     }
 
-    createDbPromise().then( () => {
-      importReviewsPromise().then( () => {
-        importCategoriesPromise().then( () => {
-          importProductcategoriesPromise().then( () => {
+    let importCmsPagesPromise = function () {
+      if (magentoConfig.SKIP_PAGES) {
+        return Promise.resolve();
+      } else {
+        console.log(' == CMS PAGES IMPORTER ==');
+
+        try {
+          return exec('node', [
+            '--harmony',
+            'node_modules/mage2vuestorefront/src/cli.js',
+            'pages'
+          ], {env: env, shell: true})
+        } catch (error) {
+          console.log('ERROR: cms pages not fetched because: ' + error);
+          return Promise.resolve();
+        }
+      }
+    }
+
+    let importCmsBlocksPromise = function () {
+      if (magentoConfig.SKIP_BLOCKS) {
+        return Promise.resolve();
+      } else {
+        console.log(' == CMS BLOCKS IMPORTER ==');
+
+        try {
+          return exec('node', [
+            '--harmony',
+            'node_modules/mage2vuestorefront/src/cli.js',
+            'blocks'
+          ], {env: env, shell: true})
+        } catch (error) {
+          console.log('ERROR: cms blocks not fetched because: ' + error);
+          return Promise.resolve();
+        }
+      }
+    }
+
+    createDbPromise().then(() => {
+      importReviewsPromise().then(() => {
+        importCategoriesPromise().then(() => {
+          importProductcategoriesPromise().then(() => {
             importAttributesPromise().then(() => {
               importTaxrulePromise().then(() => {
-                importProductsPromise().then (() => {
-                  reindexPromise().then( () => {
+                importProductsPromise().then(() => {
+                  reindexPromise().then(() => {
+                    importCmsPagesPromise().then(() => {
+                      importCmsBlocksPromise().then(() => {
                         console.log('Done! Bye Bye!')
                         process.exit(0)
+                      })
+                    })
                   })
                 })
               })
@@ -285,7 +338,6 @@ program
       })
     })
   });
-
 
 program
   .on('command:*', () => {
@@ -297,9 +349,9 @@ program
   .parse(process.argv)
 
 process.on('unhandledRejection', (reason, p) => {
-  console.log("Unhandled Rejection at: Promise ", p, " reason: ", reason)
+  console.log('Unhandled Rejection at: Promise ', p, ' reason: ', reason)
 })
 
-process.on('uncaughtException', function(exception) {
+process.on('uncaughtException', (exception) => {
   console.log(exception)
 })

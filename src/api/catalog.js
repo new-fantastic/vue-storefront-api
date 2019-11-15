@@ -68,6 +68,25 @@ export default ({config, db}) => function (req, res, body) {
 		url = 'http://' + url
 	}
 
+	/**
+	 * @description - Support for bundle_price sorting first
+	 */
+
+	if (url.includes('sort=final_price')) {
+		const desc = url.includes('sort=final_price:desc')
+		url = url.replace(desc ? 'sort=final_price:desc' : 'sort=final_price', '')
+
+		const ordering = desc ? 'desc' : 'asc'
+
+		requestBody.sort = [
+			{ "bundle_price" : {"order" : ordering}},
+			{ "final_price" : {"order" : ordering}},
+			"_score"
+		]
+	}
+
+	console.log(requestBody)
+
 	// Check price tiers
 	if (config.usePriceTiers) {
 		const userToken = requestBody.groupToken
